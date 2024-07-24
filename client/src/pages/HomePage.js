@@ -58,10 +58,6 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page]);
   //load more
   const loadMore = async () => {
     try {
@@ -74,7 +70,10 @@ const HomePage = () => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (page === 1) return;
+    loadMore();
+  }, [page , loadMore]);
   // filter by cat
   const handleFilter = (value, id) => {
     let all = [...checked];
@@ -87,7 +86,7 @@ const HomePage = () => {
   };
   useEffect(() => {
     if (!checked.length || !radio.length) getAllProducts();
-  }, [checked.length, radio.length]);
+  }, [checked.length, radio.length ]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProduct();

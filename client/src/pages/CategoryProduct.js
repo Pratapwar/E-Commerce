@@ -9,9 +9,6 @@ const CategoryProduct = () => {
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState([]);
 
-  useEffect(() => {
-    if (params?.slug) getPrductsByCat();
-  }, [params?.slug]);
   const getPrductsByCat = async () => {
     try {
       const { data } = await axios.get(
@@ -23,7 +20,9 @@ const CategoryProduct = () => {
       console.log(error);
     }
   };
-
+  useEffect(() => {
+    if (params?.slug) getPrductsByCat();
+  }, [params?.slug,getPrductsByCat]);
   return (
     <Layout>
       <div className="container mt-3 category">

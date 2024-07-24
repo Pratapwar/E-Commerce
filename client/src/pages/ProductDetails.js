@@ -13,7 +13,7 @@ const ProductDetails = () => {
   //initalp details
   useEffect(() => {
     if (params?.slug) getProduct();
-  }, [params?.slug]);
+  }, [params?.slug , getProduct]);
   //getProduct
   const getProduct = async () => {
     try {
