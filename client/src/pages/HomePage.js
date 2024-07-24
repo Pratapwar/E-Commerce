@@ -19,8 +19,8 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  //get all cat
-  const getAllCategory = async () => {
+   //get all categories
+   const getAllCategory = async () => {
     try {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
@@ -37,7 +37,7 @@ const HomePage = () => {
   }, []);
 
   //get products
-  const getAllProducts = async (page) => {
+  const getAllProducts = useCallback(async (page) => {
     try {
       setLoading(true);
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
@@ -47,7 +47,7 @@ const HomePage = () => {
       setLoading(false);
       console.log(error);
     }
-  };
+  }, []);
 
   //get total count
   const getTotal = async () => {
@@ -60,7 +60,7 @@ const HomePage = () => {
   };
 
   //load more
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
@@ -70,7 +70,7 @@ const HomePage = () => {
       console.log(error);
       setLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     if (page === 1) {
@@ -78,9 +78,9 @@ const HomePage = () => {
     } else {
       loadMore();
     }
-  }, [page]);
+  }, [page, getAllProducts, loadMore]);
 
-  // filter by cat
+  // filter by category
   const handleFilter = (value, id) => {
     let all = [...checked];
     if (value) {
@@ -105,12 +105,11 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!checked.length || !radio.length) getAllProducts(page);
-  }, [checked.length, radio.length]);
+  }, [checked.length, radio.length, getAllProducts, page]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProduct();
   }, [checked, radio, filterProduct]);
-
   return (
     <Layout title={"ALl Products - Best offers "}>
       {/* banner image */}
