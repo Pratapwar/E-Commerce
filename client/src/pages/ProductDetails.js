@@ -10,24 +10,7 @@ const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
 
-  //initalp details
-  useEffect(() => {
-    if (params?.slug) getProduct();
-  }, [params?.slug , getProduct]);
-  //getProduct
-  const getProduct = async () => {
-    try {
-      const { data } = await axios.get(
-        `/api/v1/product/get-product/${params.slug}`
-      );
-      setProduct(data?.product);
-      getSimilarProduct(data?.product._id, data?.product.category._id);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //get similar product
-  const getSimilarProduct = async (pid, cid) => {
+  const getSimilarProduct = useCallback(async (pid, cid) => {
     try {
       const { data } = await axios.get(
         `/api/v1/product/related-product/${pid}/${cid}`
@@ -36,7 +19,24 @@ const ProductDetails = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const { data } = await axios.get(
+          `/api/v1/product/get-product/${params.slug}`
+        );
+        setProduct(data?.product);
+        getSimilarProduct(data?.product._id, data?.product.category._id);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (params?.slug) getProduct();
+  }, [params?.slug, getSimilarProduct]);
+
   return (
     <Layout>
       <div className="row container product-details">

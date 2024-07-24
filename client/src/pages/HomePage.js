@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import { Checkbox, Radio } from "antd";
 import { Prices } from "../components/Prices";
@@ -35,8 +35,9 @@ const HomePage = () => {
     getAllCategory();
     getTotal();
   }, []);
+
   //get products
-  const getAllProducts = async () => {
+  const getAllProducts = async (page) => {
     try {
       setLoading(true);
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
@@ -48,7 +49,7 @@ const HomePage = () => {
     }
   };
 
-  //getTOtal COunt
+  //get total count
   const getTotal = async () => {
     try {
       const { data } = await axios.get("/api/v1/product/product-count");
@@ -64,16 +65,21 @@ const HomePage = () => {
       setLoading(true);
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
       setLoading(false);
-      setProducts([...products, ...data?.products]);
+      setProducts((prevProducts) => [...prevProducts, ...data?.products]);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
   };
+
   useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page , loadMore]);
+    if (page === 1) {
+      getAllProducts(page);
+    } else {
+      loadMore();
+    }
+  }, [page]);
+
   // filter by cat
   const handleFilter = (value, id) => {
     let all = [...checked];
@@ -84,16 +90,8 @@ const HomePage = () => {
     }
     setChecked(all);
   };
-  useEffect(() => {
-    if (!checked.length || !radio.length) getAllProducts();
-  }, [checked.length, radio.length ]);
 
-  useEffect(() => {
-    if (checked.length || radio.length) filterProduct();
-  }, [checked, radio]);
-
-  //get filterd product
-  const filterProduct = async () => {
+  const filterProduct = useCallback(async () => {
     try {
       const { data } = await axios.post("/api/v1/product/product-filters", {
         checked,
@@ -103,7 +101,16 @@ const HomePage = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [checked, radio]);
+
+  useEffect(() => {
+    if (!checked.length || !radio.length) getAllProducts(page);
+  }, [checked.length, radio.length]);
+
+  useEffect(() => {
+    if (checked.length || radio.length) filterProduct();
+  }, [checked, radio, filterProduct]);
+
   return (
     <Layout title={"ALl Products - Best offers "}>
       {/* banner image */}
