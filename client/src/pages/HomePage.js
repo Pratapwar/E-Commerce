@@ -111,7 +111,7 @@ const HomePage = () => {
     if (checked.length || radio.length) filterProduct();
   }, [checked, radio, filterProduct]);
   return (
-    <Layout title={"ALl Products - Best offers "}>
+    <Layout title={"ALL Products - Best offers "}>
       {/* banner image */}
       <img
         src="/images/banner.png"
